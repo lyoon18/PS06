@@ -1,6 +1,6 @@
 ---
 title: "STAT/MATH 495: Problem Set 06"
-author: "WRITE YOUR NAME HERE"
+author: "Leonard Yoon"
 date: "2017-10-17"
 output:
   html_document:
@@ -24,17 +24,9 @@ library(broom)
 library(knitr)
 ```
 
-
-
-
-
 # Collaboration
 
-Please indicate who you collaborated with on this assignment: 
-
-
-
-
+Please indicate who you collaborated with on this assignment: Tim, Wayne, Tasheena
 
 # Setup
 
@@ -95,28 +87,67 @@ n_sample <- 10000
 
 # Computation
 
-```{r}
+I will generate $n\_sample = 10,000$ samples of size $n = 500$. For each sample, I fit the two splines and predict $\widehat{y}$ for each spline model at $x_0 = .95$.
 
+```{r, warning=FALSE, message=FALSE}
+lm_pred <- runif(n=n_sample) # initialize vectors for y-hats
+sp_pred <- runif(n=n_sample)
+
+for (i in 1:n_sample) {
+  samp <- generate_sample(f, n, sigma) # generate sample
+  linear_model <- smooth.spline(x=samp$x, y=samp$y, df = 2) # essentially lm
+  splines_model <- smooth.spline(x=samp$x, y=samp$y, df = 99) # df = 99 spline
+  
+  lm_pred[i] <- predict(linear_model,test_set$x)$y # test y-hat created from predict()
+  sp_pred[i] <- predict(splines_model,test_set$x)$y 
+}
 ```
 
+I then calculate the MSE for each model. To do so, I will generate $n\_sample = 10,000$ values of $y$.
+
+```{r, warning=FALSE, message=FALSE}
+epsilon <- rnorm(n = n_sample, mean = 0, sd = sigma)
+y <- f(.95) + epsilon # generate y's
+
+MSElm <- (1/n_sample)*sum((y - lm_pred)^2) # calculate MSE
+MSEsp <- (1/n_sample)*sum((y - sp_pred)^2)
+```
+
+Next, I calculate the Variance and Bias$^2$ for each model.
+
+```{r, warning=FALSE, message=FALSE}
+varlm <- var(lm_pred) # calculate variance
+varsp <- var(sp_pred)
+
+bias_sqlm <- (mean(lm_pred) - f(.95))^2 # calculate Bias^2
+bias_sqsp <- (mean(sp_pred) - f(.95))^2
+```
 
 # Tables
 
-As done in Lec 2.7, for both
+```{r, warning=FALSE, message=FALSE}
+dflm <- data_frame(MSE = MSElm, 
+                   bias_squared = bias_sqlm, 
+                   var = varlm, 
+                   irreducible = sigma^2, # units need to be squared, so it's sigma^2
+                   sum = bias_sqlm + varlm + sigma^2)
 
-* An `lm` regression AKA a `smooth.splines(x, y, df=2)` model fit 
-* A `smooth.splines(x, y, df=99)` model fit 
+dfsp <- data_frame(MSE = MSEsp, 
+                   bias_squared = bias_sqsp, 
+                   var = varsp, 
+                   irreducible = sigma^2, 
+                   sum = bias_sqsp + varsp + sigma^2)
 
-output tables comparing:
+df <- rbind(dflm, dfsp) # output table compares km to spline df=99
+rownames(df)=c("lm", "spline df=99")
 
-|  MSE| bias_squared|   var| irreducible|   sum|
-|----:|------------:|-----:|-----------:|-----:|
-|     X|           X  |     X |      X |         X |
+df %>% knitr::kable(digits=4)
+```
 
-where `sum = bias_squared + var + irreducible`. You can created cleanly formatted tables like the one above by piping a data frame into `knitr::kable(digits=4)`.
-
-
-
+```{r, include=FALSE}
+pct.err.lm <- (1 - ((bias_sqlm + varlm + sigma^2)/MSElm))*100
+pct.err.sp <- (1 - ((bias_sqsp + varsp + sigma^2)/MSEsp))*100
+```
 
 # Analysis
 
@@ -131,6 +162,6 @@ $x$ in this example, and not just for $$\mbox{MSE}\left[\widehat{f}(x_0)\right]
 
 **Answers**:
 
-1.
-1.
-1.
+1. The sanity check is that there should be high bias and low variance for the df = 2 results and there should be low bias and high variance for the df = 99 results. Also, my percent error between my sum and my MSE for the lm is `r pct.err.lm`% and my percent error between my sum and my MSE for the spline with df = 99 is `r pct.err.sp`%, neither of which are very alarming.
+1. The procedure would be very similar to what is done above, except the `predict` function would be done on the entire sample as opposed to just $x_0 = .95$. With 10,000 samples, we would be able to essentially predict points for the entire domain and thus calculate MSE for $\widehat{f}(x)$ as opposed to just the MSE for $\widehat{f}(.95)$.
+1. The MSE is slightly lower for the df = 2 model from my simulation, so knowing that, I would prefer that model because it has a lower total error. I would also choose the underfit (linear) model for predicting the point of interest because despite the high bias, the low variance ensures that the error will be more consistent between the predicted point and the true value of the point of interest. This is preferred to having a high variance observation, which could potentially be very off the true value. 
