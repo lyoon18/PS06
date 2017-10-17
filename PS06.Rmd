@@ -26,7 +26,7 @@ library(knitr)
 
 # Collaboration
 
-Please indicate who you collaborated with on this assignment: Tim, Wayne, Tasheena, Vickie
+Please indicate who you collaborated with on this assignment: Tim, Vickie, Brendan
 
 # Setup
 
@@ -103,7 +103,7 @@ for (i in 1:n_sample) {
 }
 ```
 
-I then calculate the MSE for each model. To do so, I will generate $n\_sample = 10,000$ values of $y$.
+I then calculate the MSE for each model. To do so, I will generate $n\_sample = 10,000$ values of $y$. $MSE = \frac{1}{n} \sum (y - \widehat{y})^2$.
 
 ```{r, warning=FALSE, message=FALSE}
 epsilon <- rnorm(n = n_sample, mean = 0, sd = sigma)
@@ -113,7 +113,7 @@ MSElm <- (1/n_sample)*sum((y - lm_pred)^2) # calculate MSE
 MSEsp <- (1/n_sample)*sum((y - sp_pred)^2)
 ```
 
-Next, I calculate the Variance and Bias$^2$ for each model.
+Next, I calculate the Variance and Bias$^2$ for each model. $Bias^2 = \mathbf{E}[\widehat{f}(x)] - f(x)$.
 
 ```{r, warning=FALSE, message=FALSE}
 varlm <- var(lm_pred) # calculate variance

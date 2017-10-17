@@ -224,7 +224,7 @@ div.tocify {
 
 <div id="collaboration" class="section level1">
 <h1>Collaboration</h1>
-<p>Please indicate who you collaborated with on this assignment: Tim, Wayne, Tasheena, Vickie</p>
+<p>Please indicate who you collaborated with on this assignment: Tim, Vickie, Brendan</p>
 </div>
 <div id="setup" class="section level1">
 <h1>Setup</h1>
@@ -280,13 +280,13 @@ for (i in 1:n_sample) {
   lm_pred[i] &lt;- predict(linear_model,test_set$x)$y # test y-hat created from predict()
   sp_pred[i] &lt;- predict(splines_model,test_set$x)$y 
 }</code></pre>
-<p>I then calculate the MSE for each model. To do so, I will generate <span class="math inline">\(n\_sample = 10,000\)</span> values of <span class="math inline">\(y\)</span>.</p>
+<p>I then calculate the MSE for each model. To do so, I will generate <span class="math inline">\(n\_sample = 10,000\)</span> values of <span class="math inline">\(y\)</span>. <span class="math inline">\(MSE = \frac{1}{n} \sum (y - \widehat{y})^2\)</span>.</p>
 <pre class="r"><code>epsilon &lt;- rnorm(n = n_sample, mean = 0, sd = sigma)
 y &lt;- f(.95) + epsilon # generate y's
 
 MSElm &lt;- (1/n_sample)*sum((y - lm_pred)^2) # calculate MSE
 MSEsp &lt;- (1/n_sample)*sum((y - sp_pred)^2)</code></pre>
-<p>Next, I calculate the Variance and Bias<span class="math inline">\(^2\)</span> for each model.</p>
+<p>Next, I calculate the Variance and Bias<span class="math inline">\(^2\)</span> for each model. <span class="math inline">\(Bias^2 = \mathbf{E}[\widehat{f}(x)] - f(x)\)</span>.</p>
 <pre class="r"><code>varlm &lt;- var(lm_pred) # calculate variance
 varsp &lt;- var(sp_pred)
 
