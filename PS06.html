@@ -284,8 +284,8 @@ for (i in 1:n_sample) {
 <pre class="r"><code>epsilon &lt;- rnorm(n = n_sample, mean = 0, sd = sigma)
 y &lt;- f(.95) + epsilon # generate y's
 
-MSElm &lt;- (1/n_sample)*sum((y - lm_pred)^2) # calculate MSE
-MSEsp &lt;- (1/n_sample)*sum((y - sp_pred)^2)</code></pre>
+MSElm &lt;- mean((y - lm_pred)^2) # calculate MSE
+MSEsp &lt;- mean((y - sp_pred)^2) # calculate MSE</code></pre>
 <p>Next, I calculate the Variance and Bias<span class="math inline">\(^2\)</span> for each model. <span class="math inline">\(Bias^2 = \mathbf{E}[\widehat{f}(x)] - f(x)\)</span>.</p>
 <pre class="r"><code>varlm &lt;- var(lm_pred) # calculate variance
 varsp &lt;- var(sp_pred)
