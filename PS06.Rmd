@@ -109,8 +109,8 @@ I then calculate the MSE for each model. To do so, I will generate $n\_sample = 
 epsilon <- rnorm(n = n_sample, mean = 0, sd = sigma)
 y <- f(.95) + epsilon # generate y's
 
-MSElm <- (1/n_sample)*sum((y - lm_pred)^2) # calculate MSE
-MSEsp <- (1/n_sample)*sum((y - sp_pred)^2)
+MSElm <- mean((y - lm_pred)^2) # calculate MSE
+MSEsp <- mean((y - sp_pred)^2) # calculate MSE
 ```
 
 Next, I calculate the Variance and Bias$^2$ for each model. $Bias^2 = \mathbf{E}[\widehat{f}(x)] - f(x)$.
